@@ -5,6 +5,7 @@ const server = http.createServer((req, res) => {
   const { url, method } = req;
 
   if (url === "/") {
+    console.log("/block");
     res.setHeader("Content-Type", "text/html");
     res.write("<html>");
     res.write("<head><title>Enter text</title></head>");
@@ -16,15 +17,19 @@ const server = http.createServer((req, res) => {
   }
 
   if (url === "/message" && method === "POST") {
+    console.log("/message block");
     const body = [];
     req.on("data", (chunk) => {
+      console.log("Request 'data' block");
       console.log(chunk);
       body.push(chunk);
+      console.log(`Body: ${body}`);
     });
 
     req.on("end", () => {
+      console.log("Request 'end' block");
       const parseBody = Buffer.concat(body).toString();
-      const message = parseBody.split("=").at(1);
+      const message = parseBody.split("=").at(1).split("+").join(" ");
       fs.writeFileSync("message.txt", message);
       res.statusCode = 302;
       res.setHeader("Location", "/");
@@ -33,6 +38,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (url === "/page") {
+    console.log("/page blcok");
     res.setHeader("Content-Type", "text/html");
     res.write("<html>");
     res.write("<head><title>First Node Html Page</title></head>");
@@ -40,6 +46,8 @@ const server = http.createServer((req, res) => {
     res.write("</html>");
     return res.end();
   }
+
+  console.log("Last statement in global scope");
 });
 
 server.listen(8000, "127.0.0.1", () => {
